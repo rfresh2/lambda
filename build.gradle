@@ -107,7 +107,6 @@ dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion"
     compileOnly 'org.jetbrains:annotations:23.0.0'
 
-    // This Baritone will NOT be included in the jar
     jarLibs files("libs/baritone-api-forge-1.2.15.jar")
 
     // Add everything in jarLibs to implementation (compile)
