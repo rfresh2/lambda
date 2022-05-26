@@ -107,6 +107,7 @@ dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion"
     compileOnly 'org.jetbrains:annotations:23.0.0'
 
+    implementation files("libs/baritone-1.2.15.jar")
     jarLibs files("libs/baritone-api-forge-1.2.15.jar")
 
     // Add everything in jarLibs to implementation (compile)

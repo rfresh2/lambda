@@ -13,6 +13,7 @@ import com.lambda.client.util.threads.safeListener
 import com.lambda.client.event.listener.listener
 import com.lambda.client.module.modules.player.LagNotifier
 import com.lambda.client.module.modules.player.NoGhostItems
+import com.lambda.client.process.PauseProcess.isPausing
 import com.lambda.client.process.PauseProcess.pauseBaritone
 import com.lambda.client.process.PauseProcess.unpauseBaritone
 import com.lambda.client.util.threads.onMainThreadSafe
@@ -75,7 +76,10 @@ object PlayerInventoryManager : Manager {
 
             if (transactionQueue.isEmpty()) {
                 currentId = 0
-                if (NoGhostItems.baritoneSync) NoGhostItems.unpauseBaritone()
+                if (NoGhostItems.baritoneSync && isPausing(NoGhostItems)) {
+                    LambdaMod.LOG.info("Baritone unpaused.")
+                    NoGhostItems.unpauseBaritone()
+                }
                 return@safeListener
             }
 
@@ -177,18 +181,27 @@ object PlayerInventoryManager : Manager {
      * @return [TaskState] representing the state of this task
      */
     fun AbstractModule.addInventoryTask(vararg clickInfo: ClickInfo): TaskState {
-        if (NoGhostItems.baritoneSync) NoGhostItems.pauseBaritone()
+        if (NoGhostItems.baritoneSync) {
+            LambdaMod.LOG.info("Baritone paused.")
+            NoGhostItems.pauseBaritone()
+        }
         return InventoryTask(currentId++, modulePriority, clickInfo).let {
             transactionQueue.add(it)
             it.taskState
         }
     }
 
-    fun addInventoryTask(vararg clickInfo: ClickInfo) =
-        InventoryTask(currentId++, 0, clickInfo).let {
+    fun addInventoryTask(vararg clickInfo: ClickInfo) {
+        if (NoGhostItems.baritoneSync) {
+            LambdaMod.LOG.info("Baritone paused.")
+            NoGhostItems.pauseBaritone()
+        }
+        return InventoryTask(currentId++, 0, clickInfo).let {
             transactionQueue.add(it)
             it.taskState
         }
+    }
+
 
     private data class InventoryTask(
         private val id: Int,
